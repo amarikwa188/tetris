@@ -7,6 +7,8 @@ from pygame.time import Clock
 
 import game_settings as gs
 
+from states.main_menu import MainMenu
+
 
 class Game:
     def __init__(self) -> None:
@@ -15,13 +17,14 @@ class Game:
                                                         gs.screen_height))
         self.clock: Clock = pygame.time.Clock()
 
-        self.current_state: Any | None = None
+        self.current_state: Any = MainMenu(self.screen)
 
 
     def run(self) -> None:
         while True:
             self.clock.tick(gs.framerate)
             self.check_events()
+            self.current_state.run()
             pygame.display.update()
 
 
@@ -31,6 +34,8 @@ class Game:
                 pygame.quit()
                 sys.exit()
 
+            self.current_state.handle_events(event)
+        
 
 if __name__ == "__main__":
     game: Game = Game()

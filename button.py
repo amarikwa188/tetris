@@ -3,9 +3,20 @@ from pygame import Surface, Rect
 
 
 class Button:
-    def __init__(self, screen: Surface, x: int, y: int, image: str, 
+    """Represents an instance of the button class."""
+    def __init__(self, surface: Surface, x: int, y: int, image: str, 
                  hover_image: str='') -> None:
-        self.screen: Surface = screen
+        """
+        Initialize a button object.
+
+        :param surface: the surface where the button is rendered.
+        :param x: the center x position of the button.
+        :param y: the center y position of the button.
+        :param image: the default image of the button.
+        :param hover_image: the image of the button when the mouse is hovering
+        over it. If none is entered, the default image is always used.
+        """
+        self.surface: Surface = surface
 
         self.main_image: Surface = pygame.image.load(image)
 
@@ -20,6 +31,11 @@ class Button:
     
 
     def hover(self) -> None:
+        """
+        Display the appropriate image depending on whether the mouse is
+        hovering over the button or not.
+        Note: This is method is called within the draw_button() method.
+        """
         pos: tuple[int,int] = pygame.mouse.get_pos()
 
         if self.hover_image:
@@ -31,5 +47,8 @@ class Button:
 
 
     def draw_button(self) -> None:
+        """
+        Draw the button to the screen.
+        """
         self.hover()
-        self.screen.blit(self.image, self.rect)
+        self.surface.blit(self.image, self.rect)

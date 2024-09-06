@@ -12,7 +12,7 @@ class Tetris:
         self.state_manager: StateManager =  state_manager
 
     def run(self) -> None:
-        self.screen.fill((0,0,0))
+        self.screen.fill((230,230,230))
 
     def handle_events(self, event: Event) -> None:
         pass

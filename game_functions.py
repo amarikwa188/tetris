@@ -1,5 +1,7 @@
 import pygame, sys
 
+import game_settings as gs
+
 
 def check_events() -> None:
     for event in pygame.event.get():
@@ -9,4 +11,5 @@ def check_events() -> None:
 
 
 def update_screen() -> None:
+    gs.current_state.draw_ui()
     pygame.display.update()

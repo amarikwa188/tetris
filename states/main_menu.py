@@ -4,13 +4,15 @@ from pygame import Surface, Rect
 from pygame.event import Event
 
 import game_settings as gs
+from state_manager import StateManager
 
 from button import Button
 
 
 class MainMenu:
-    def __init__(self, screen: Surface) -> None:
+    def __init__(self, screen: Surface, state_manager: StateManager) -> None:
         self.screen: Surface = screen
+        self.state_manager: StateManager = state_manager
 
         self.start_button: Button = Button(screen, gs.screen_width//2, 300,
                                            "assets/ui/start_button.png",
@@ -44,7 +46,8 @@ class MainMenu:
 
             if self.start_button.rect.collidepoint(pos) and \
                 not self.options_screen_active:
-                print("start")
+                self.state_manager.current_state = \
+                    self.state_manager.states['main_game']
 
             if self.options_button.rect.collidepoint(pos):
                 self.options_screen_active = True

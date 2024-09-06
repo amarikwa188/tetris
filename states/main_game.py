@@ -2,13 +2,17 @@ import pygame
 from pygame import Surface
 from pygame.event import Event
 
+import game_settings as gs
+from state_manager import StateManager
+
 
 class Tetris:
-    def __init__(self, screen: Surface) -> None:
+    def __init__(self, screen: Surface, state_manager: StateManager) -> None:
         self.screen: Surface = screen
+        self.state_manager: StateManager =  state_manager
 
     def run(self) -> None:
-        pass
+        self.screen.fill((0,0,0))
 
     def handle_events(self, event: Event) -> None:
         pass

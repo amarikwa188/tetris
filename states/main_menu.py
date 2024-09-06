@@ -27,20 +27,28 @@ class MainMenu:
     
     def run(self) -> None:
         self.screen.fill((100,100,150))
-        self.start_button.draw_button()
-        self.options_button.draw_button()
-        self.quit_button.draw_button()
+
+        if not self.options_screen_active:
+            # main menu
+            self.start_button.draw_button()
+            self.options_button.draw_button()
+            self.quit_button.draw_button()
+        else:
+            # options menu
+            pass
 
 
     def handle_events(self, event: Event) -> None:
         if event.type ==  pygame.MOUSEBUTTONDOWN:
             pos: tuple[int,int] = pygame.mouse.get_pos()
 
-            if self.start_button.rect.collidepoint(pos):
+            if self.start_button.rect.collidepoint(pos) and \
+                not self.options_screen_active:
                 print("start")
 
             if self.options_button.rect.collidepoint(pos):
-                print("options")
+                self.options_screen_active = True
 
-            if self.quit_button.rect.collidepoint(pos):
+            if self.quit_button.rect.collidepoint(pos) and \
+                not self.options_screen_active:
                 sys.exit()

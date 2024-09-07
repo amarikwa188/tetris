@@ -1,3 +1,5 @@
+from pygame import Vector2
+
 # screen dimensions
 screen_width: int = 400
 screen_height: int = 500
@@ -14,6 +16,11 @@ grid_size: tuple[int,int] = (grid_width, grid_height)
 
 grid_start_x: int = 25
 grid_start_y: int = 50
+
+initial_offset: Vector2 = Vector2(grid_width//2, 0)
+MOVE_DIRECTIONS: dict[str, Vector2] = {'left': Vector2(-1,0),
+                                       'right': Vector2(1,0),
+                                       'down': Vector2(0,1)}
 
 TETROMINOES: dict[str, list[tuple[int,int]]] = {'T': [(0,0),(-1,0),(1,0),(0,-1)],
                                                 'O': [(0,0),(0,-1),(1,0),(1,-1)],

@@ -5,6 +5,7 @@ from pygame.event import Event
 
 import game_settings as gs
 from state_manager import StateManager
+from states.main_game import Tetris
 
 from button import Button
 
@@ -73,8 +74,9 @@ class MainMenu:
             # main menu buttons
             if self.start_button.rect.collidepoint(pos) and \
                 not self.options_screen_active:
-                self.state_manager.current_state = \
-                    self.state_manager.states['main_game']
+                self.game_class = self.state_manager.get_state("main_game")
+                self.state_manager.set_state(self.game_class(self.screen,
+                                                             self.state_manager))
 
             if self.options_button.rect.collidepoint(pos):
                 self.options_screen_active = True

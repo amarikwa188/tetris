@@ -23,7 +23,7 @@ class Game:
 
         self.state_manager: StateManager = StateManager()
         self.initialize_states()
-        self.state_manager.current_state = self.main_menu
+        self.state_manager.current_state = MainMenu(self.screen, self.state_manager)
 
 
     def run(self) -> None:
@@ -47,8 +47,8 @@ class Game:
 
     def initialize_states(self) -> None:
         """Create instances of the different game states."""
-        self.main_menu: MainMenu = MainMenu(self.screen, self.state_manager)
-        self.main_game: Tetris = Tetris(self.screen, self.state_manager)
+        self.main_menu: MainMenu = MainMenu
+        self.main_game: Tetris = Tetris
 
         states: dict[str, Any] = {'main_menu': self.main_menu,
                                   'main_game': self.main_game}

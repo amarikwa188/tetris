@@ -1,4 +1,7 @@
+import random as rng
+
 import pygame
+from pygame import Vector2
 from pygame import Surface, Rect
 from pygame.event import Event
 from pygame.sprite import Sprite, Group
@@ -27,8 +30,11 @@ class Tetris:
 
 
     def handle_events(self, event: Event) -> None:
-        pass
-
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                menu_class = self.state_manager.get_state("main_menu")
+                self.state_manager.set_state(menu_class(self.screen,
+                                                        self.state_manager))
 
     def draw_grid(self) -> None:
         for col in range(gs.grid_width):
@@ -44,12 +50,17 @@ class Tetronimo:
     def __init__(self, block_group: Group) -> None:
         self.block_group: Group = block_group
         
-        self.shape: str = 'T'
-        self.block: Block = [Block(pos, self.block_group) 
+        self.shape: str = rng.choice(list(gs.TETROMINOES))
+        self.blocks: list[Block] = [Block(pos, self.block_group) 
                              for pos in gs.TETROMINOES[self.shape]]
+        
+    def move(self, direction: str) -> None:
+        move_direction: Vector2 = gs.MOVE_DIRECTIONS[direction.lower()]
+        for block in self.blocks:
+            block.pos += move_direction
 
     def update(self) -> None:
-        pass
+        self.move('down')
 
 
 class Block(Sprite):
@@ -57,9 +68,14 @@ class Block(Sprite):
         super().__init__()
         block_group.add(self)
 
+        self.pos: Vector2 = Vector2(position) + gs.initial_offset
+
         self.image: Surface = Surface((gs.tile_size, gs.tile_size))
         self.image.fill("red")
 
         self.rect: Rect = self.image.get_rect()
-        self.rect.topleft = position[0] * gs.tile_size + gs.grid_start_x, \
-                            position[1] * gs.tile_size + gs.grid_start_y
+        
+        
+    def update(self) -> None:
+        self.rect.topleft = self.pos * gs.tile_size + \
+                            Vector2(gs.grid_start_x, gs.grid_start_y)

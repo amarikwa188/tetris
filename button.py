@@ -34,7 +34,7 @@ class Button:
         """
         Display the appropriate image depending on whether the mouse is
         hovering over the button or not.
-        Note: This is method is called within the draw_button() method.
+        Note: This method is called within the draw_button() method.
         """
         pos: tuple[int,int] = pygame.mouse.get_pos()
 

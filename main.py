@@ -13,7 +13,9 @@ from states.main_game import Tetris
 
 
 class Game:
+    """Represents an instance of a class."""
     def __init__(self) -> None:
+        """Inititialize an instance of the game."""
         pygame.init()
         self.screen: Surface = pygame.display.set_mode((gs.screen_width,
                                                         gs.screen_height))
@@ -25,6 +27,7 @@ class Game:
 
 
     def run(self) -> None:
+        """Run the game loop."""
         while True:
             self.clock.tick(gs.framerate)
             self.check_events()
@@ -33,6 +36,7 @@ class Game:
 
 
     def check_events(self) -> None:
+        """Handle user input."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -42,6 +46,7 @@ class Game:
 
 
     def initialize_states(self) -> None:
+        """Create instances of the different game states."""
         self.main_menu: MainMenu = MainMenu(self.screen, self.state_manager)
         self.main_game: Tetris = Tetris(self.screen, self.state_manager)
 

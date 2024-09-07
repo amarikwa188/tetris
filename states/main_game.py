@@ -28,6 +28,8 @@ class Tetris:
 
         self.block_group.update()
 
+        self.check_tetronimo_landed()
+
 
     def handle_events(self, event: Event) -> None:
         if event.type == pygame.KEYDOWN:
@@ -59,6 +61,11 @@ class Tetris:
         pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)   
 
 
+    def check_tetronimo_landed(self) -> None:
+        if self.tetromino.landed:
+            self.tetromino = Tetronimo(self.screen, self.block_group)
+
+
 ### PIECE CLASS ####
 class Tetronimo:
     def __init__(self, screen: Surface, block_group: Group) -> None:
@@ -69,13 +76,27 @@ class Tetronimo:
         self.blocks: list[Block] = [Block(self.screen, pos, self.block_group) 
                              for pos in gs.TETROMINOES[self.shape]]
         
+        self.landed: bool = False
+        
     def move(self, direction: str) -> None:
         move_direction: Vector2 = gs.MOVE_DIRECTIONS[direction.lower()]
-        for block in self.blocks:
-            block.pos += move_direction
+
+        new_block_positions = [block.pos + move_direction for block in self.blocks]
+        is_collide: bool = self.is_collide(new_block_positions)
+
+        if not self.landed:
+            if not is_collide:
+                for block in self.blocks:
+                    block.pos += move_direction
+            elif direction == 'down':
+                self.landed =  True
 
     def update(self) -> None:
         self.move('down')
+
+    def is_collide(self, block_positions: list[Vector2]) -> bool:
+        return any(map(Block.is_collide, self.blocks, block_positions))
+
 
 
 ### INDIVIDUAL BLOCK CLASS ###
@@ -104,4 +125,10 @@ class Block(Sprite):
     def draw_block(self) -> None:
         if self.rect.top >= gs.grid_start_y:
             self.screen.blit(self.image, self.rect)
+
+    def is_collide(self, position: Vector2) -> bool:
+        x,y = int(position.x), int(position.y)
+        if 0 <= x < gs.grid_width and y < gs.grid_height:
+            return False
+        return True
 

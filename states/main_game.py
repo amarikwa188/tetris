@@ -16,7 +16,7 @@ class Tetris:
         self.state_manager: StateManager =  state_manager
 
         self.block_group: Group = Group()
-        self.tetromino: Tetronimo = Tetronimo(self.block_group)
+        self.tetromino: Tetronimo = Tetronimo(screen, self.block_group)
 
 
     def run(self) -> None:
@@ -26,7 +26,7 @@ class Tetris:
         self.tetromino.update()
 
         self.block_group.update()
-        self.block_group.draw(self.screen)
+        # blocks: list[Block]
 
 
     def handle_events(self, event: Event) -> None:
@@ -47,11 +47,12 @@ class Tetris:
                                   1)
 
 class Tetronimo:
-    def __init__(self, block_group: Group) -> None:
+    def __init__(self, screen: Surface, block_group: Group) -> None:
+        self.screen: Surface = screen
         self.block_group: Group = block_group
         
         self.shape: str = rng.choice(list(gs.TETROMINOES))
-        self.blocks: list[Block] = [Block(pos, self.block_group) 
+        self.blocks: list[Block] = [Block(self.screen, pos, self.block_group) 
                              for pos in gs.TETROMINOES[self.shape]]
         
     def move(self, direction: str) -> None:
@@ -64,9 +65,13 @@ class Tetronimo:
 
 
 class Block(Sprite):
-    def __init__(self, position: tuple[int,int], block_group: Group) -> None:
+    def __init__(self, screen: Surface, position: tuple[int,int],
+                 block_group: Group) -> None:
         super().__init__()
-        block_group.add(self)
+        self.screen: Surface = screen
+
+        self.block_group: Group = block_group
+        self.block_group.add(self)
 
         self.pos: Vector2 = Vector2(position) + gs.initial_offset
 
@@ -79,3 +84,10 @@ class Block(Sprite):
     def update(self) -> None:
         self.rect.topleft = self.pos * gs.tile_size + \
                             Vector2(gs.grid_start_x, gs.grid_start_y)
+        
+        self.draw_block()
+
+    def draw_block(self) -> None:
+        if self.rect.top >= gs.grid_start_y:
+            self.screen.blit(self.image, self.rect)
+

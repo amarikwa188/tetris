@@ -10,10 +10,13 @@ import game_settings as gs
 from state_manager import StateManager
 
 
+### GAME STATE CLASS ###
 class Tetris:
     def __init__(self, screen: Surface, state_manager: StateManager) -> None:
         self.screen: Surface = screen
         self.state_manager: StateManager =  state_manager
+
+        self.set_timer()
 
         self.block_group: Group = Group()
         self.tetromino: Tetronimo = Tetronimo(screen, self.block_group)
@@ -23,10 +26,7 @@ class Tetris:
         self.screen.fill((230,230,230))
         self.draw_grid()
 
-        self.tetromino.update()
-
         self.block_group.update()
-        # blocks: list[Block]
 
 
     def handle_events(self, event: Event) -> None:
@@ -35,6 +35,14 @@ class Tetris:
                 menu_class = self.state_manager.get_state("main_menu")
                 self.state_manager.set_state(menu_class(self.screen,
                                                         self.state_manager))
+            if event.key == pygame.K_LEFT:
+                self.tetromino.move('left')
+            if event.key == pygame.K_RIGHT:
+                self.tetromino.move('right')
+        
+        if event.type == self.user_event:
+            self.tetromino.update()
+
 
     def draw_grid(self) -> None:
         for col in range(gs.grid_width):
@@ -45,7 +53,13 @@ class Tetris:
                 pygame.draw.rect(self.screen, (0,0,0),
                                  (col_pos, row_pos, gs.tile_size, gs.tile_size),
                                   1)
+                
+    def set_timer(self) -> None:
+        self.user_event: int = pygame.USEREVENT + 0
+        pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)   
 
+
+### PIECE CLASS ####
 class Tetronimo:
     def __init__(self, screen: Surface, block_group: Group) -> None:
         self.screen: Surface = screen
@@ -64,6 +78,7 @@ class Tetronimo:
         self.move('down')
 
 
+### INDIVIDUAL BLOCK CLASS ###
 class Block(Sprite):
     def __init__(self, screen: Surface, position: tuple[int,int],
                  block_group: Group) -> None:
@@ -79,7 +94,6 @@ class Block(Sprite):
         self.image.fill("red")
 
         self.rect: Rect = self.image.get_rect()
-        
         
     def update(self) -> None:
         self.rect.topleft = self.pos * gs.tile_size + \

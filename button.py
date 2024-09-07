@@ -38,9 +38,8 @@ class Button:
         """
         pos: tuple[int,int] = pygame.mouse.get_pos()
 
-        if self.hover_image:
-            if self.rect.collidepoint(pos) and self.image != self.hover_image:
-                self.image = self.hover_image
+        if self.rect.collidepoint(pos) and self.image != self.hover_image:
+            self.image = self.hover_image
 
         if not self.rect.collidepoint(pos) and self.image != self.main_image:
             self.image = self.main_image
@@ -50,5 +49,6 @@ class Button:
         """
         Draw the button to the screen.
         """
-        self.hover()
+        if self.hover_image:
+            self.hover()
         self.surface.blit(self.image, self.rect)

@@ -1,4 +1,5 @@
 import random as rng
+from typing import Literal
 
 import pygame
 from pygame import Vector2
@@ -19,7 +20,9 @@ class Tetris:
         self.set_timer()
 
         self.block_group: Group = Group()
-        self.tetromino: Tetronimo = Tetronimo(screen, self.block_group)
+        self.field_array: list[list[Block | Literal[0]]] = \
+            self.get_field_array()
+        self.tetromino: Tetronimo = Tetronimo(screen, self.block_group, self)
 
 
     def run(self) -> None:
@@ -53,8 +56,19 @@ class Tetris:
                 row_pos: int = row * gs.tile_size + gs.grid_start_y
 
                 pygame.draw.rect(self.screen, (0,0,0),
-                                 (col_pos, row_pos, gs.tile_size, gs.tile_size),
-                                  1)
+                                 (col_pos, row_pos, gs.tile_size,
+                                  gs.tile_size), 1)
+                
+    def put_blocks_in_array(self) -> None:
+        for block in self.tetromino.blocks:
+            x,y = int(block.pos.x), int(block.pos.y)
+            self.field_array[x][y] = block
+
+
+    def get_field_array(self) -> None:
+        return [[0 for _ in range(gs.grid_height)]
+                for _ in range(gs.grid_width)]
+
                 
     def set_timer(self) -> None:
         self.user_event: int = pygame.USEREVENT + 0
@@ -63,18 +77,23 @@ class Tetris:
 
     def check_tetronimo_landed(self) -> None:
         if self.tetromino.landed:
-            self.tetromino = Tetronimo(self.screen, self.block_group)
+            self.put_blocks_in_array()
+            self.tetromino = Tetronimo(self.screen, self.block_group, self)
 
 
 ### PIECE CLASS ####
 class Tetronimo:
-    def __init__(self, screen: Surface, block_group: Group) -> None:
+    def __init__(self, screen: Surface, block_group: Group,
+                 tetris: Tetris) -> None:
+        self.tetris: Tetris = tetris
+
         self.screen: Surface = screen
         self.block_group: Group = block_group
         
         self.shape: str = rng.choice(list(gs.TETROMINOES))
-        self.blocks: list[Block] = [Block(self.screen, pos, self.block_group) 
-                             for pos in gs.TETROMINOES[self.shape]]
+        self.blocks: list[Block] = [Block(self.screen, pos, self.block_group,
+                                          self) 
+                                    for pos in gs.TETROMINOES[self.shape]]
         
         self.landed: bool = False
         
@@ -102,9 +121,11 @@ class Tetronimo:
 ### INDIVIDUAL BLOCK CLASS ###
 class Block(Sprite):
     def __init__(self, screen: Surface, position: tuple[int,int],
-                 block_group: Group) -> None:
+                 block_group: Group, tetronimo: Tetronimo) -> None:
         super().__init__()
         self.screen: Surface = screen
+
+        self.tetronimo: Tetronimo = tetronimo
 
         self.block_group: Group = block_group
         self.block_group.add(self)
@@ -128,7 +149,8 @@ class Block(Sprite):
 
     def is_collide(self, position: Vector2) -> bool:
         x,y = int(position.x), int(position.y)
-        if 0 <= x < gs.grid_width and y < gs.grid_height:
+        if 0 <= x < gs.grid_width and y < gs.grid_height and \
+            (y < 0 or not self.tetronimo.tetris.field_array[x][y]):
             return False
         return True
 

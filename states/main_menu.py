@@ -21,10 +21,13 @@ class MainMenu:
         self.screen: Surface = screen
         self.state_manager: StateManager = state_manager
 
+        self.clicked: bool = False
+
         # main menu buttons
         self.start_button: Button = Button(screen, gs.screen_width//2, 300,
-                                           "assets/ui/start_button.png",
-                                           "assets/ui/start_button_H.png")
+                                           "assets/ui/sprite_0.png",
+                                           "assets/ui/sprite_1.png")
+        
         self.options_button: Button = Button(screen, gs.screen_width//2, 350,
                                              "assets/ui/options_button.png",
                                              "assets/ui/options_button_H.png")
@@ -62,7 +65,9 @@ class MainMenu:
 
         :param event: the given user event.
         """
-        if event.type ==  pygame.MOUSEBUTTONDOWN:
+        if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
+            self.clicked = True
+
             pos: tuple[int,int] = pygame.mouse.get_pos()
 
             # main menu buttons
@@ -82,4 +87,8 @@ class MainMenu:
             if self.back_button.rect.collidepoint(pos) and \
                 self.options_screen_active:
                 self.options_screen_active = False
+                
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            self.clicked = False
             

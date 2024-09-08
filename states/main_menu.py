@@ -5,7 +5,6 @@ from pygame.event import Event
 
 import game_settings as gs
 from state_manager import StateManager
-from states.main_game import Tetris
 
 from button import Button
 
@@ -24,40 +23,28 @@ class MainMenu:
 
         self.clicked: bool = False
 
-        # main menu buttons
-        self.start_button: Button = Button(screen, gs.screen_width//2, 300,
-                                           "assets/ui/sprite_0.png",
-                                           "assets/ui/sprite_1.png")
-        
-        self.options_button: Button = Button(screen, gs.screen_width//2, 350,
-                                             "assets/ui/options_button.png",
-                                             "assets/ui/options_button_H.png")
-        self.quit_button: Button = Button(screen, gs.screen_width//2, 400,
-                                          "assets/ui/quit_button.png",
-                                          "assets/ui/quit_button_H.png")
-        
-        self.options_screen_active: bool = False
+        # main menu bg
+        self.background: Surface = pygame.image\
+            .load("assets/ui/main_menu_bg.png")
 
-        # options screen buttons
-        self.back_button: Button = Button(screen, gs.screen_width//2, 450,
-                                          "assets/ui/back_button.png",
-                                          "assets/ui/back_button_H.png")
+        # main menu buttons
+        self.start_button: Button = Button(screen, gs.screen_width//2, 330,
+                                           "assets/ui/play_wide.png",
+                                           "assets/ui/play_wide_H.png", 0.9)
+
+        self.quit_button: Button = Button(screen, gs.screen_width//2, 370,
+                                          "assets/ui/exit.png",
+                                          "assets/ui/exit_H.png", 0.8)
 
     
     def run(self) -> None:
         """
         Run the menu screen.
         """
-        self.screen.fill((100,100,150))
+        self.screen.blit(self.background, (0,0))
 
-        if not self.options_screen_active:
-            # main menu
-            self.start_button.draw_button()
-            self.options_button.draw_button()
-            self.quit_button.draw_button()
-        else:
-            # options menu
-            self.back_button.draw_button()
+        self.start_button.draw_button()
+        self.quit_button.draw_button()
 
 
     def handle_events(self, event: Event) -> None:
@@ -71,24 +58,13 @@ class MainMenu:
 
             pos: tuple[int,int] = pygame.mouse.get_pos()
 
-            # main menu buttons
-            if self.start_button.rect.collidepoint(pos) and \
-                not self.options_screen_active:
+            if self.start_button.rect.collidepoint(pos):
                 self.game_class = self.state_manager.get_state("main_game")
                 self.state_manager.set_state(self.game_class(self.screen,
                                                              self.state_manager))
 
-            if self.options_button.rect.collidepoint(pos):
-                self.options_screen_active = True
-
-            if self.quit_button.rect.collidepoint(pos) and \
-                not self.options_screen_active:
+            if self.quit_button.rect.collidepoint(pos):
                 sys.exit()
-
-            # options screen buttons
-            if self.back_button.rect.collidepoint(pos) and \
-                self.options_screen_active:
-                self.options_screen_active = False
                 
 
         if event.type == pygame.MOUSEBUTTONUP:

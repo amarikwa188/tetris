@@ -1,6 +1,6 @@
 import sys
 import pygame
-from pygame import Surface
+from pygame import Surface, Rect
 from pygame.event import Event
 
 import game_settings as gs
@@ -28,13 +28,13 @@ class MainMenu:
             .load("assets/ui/main_menu_bg.png")
 
         # main menu buttons
-        self.start_button: Button = Button(screen, gs.screen_width//2, 330,
+        self.start_button: Button = Button(screen, gs.screen_width//2, 300,
                                            "assets/ui/play_wide.png",
-                                           "assets/ui/play_wide_H.png", 0.9)
+                                           "assets/ui/play_wide_H.png", 0.8)
 
-        self.quit_button: Button = Button(screen, gs.screen_width//2, 370,
+        self.quit_button: Button = Button(screen, gs.screen_width//2, 340,
                                           "assets/ui/exit.png",
-                                          "assets/ui/exit_H.png", 0.8)
+                                          "assets/ui/exit_H.png", 0.7)
 
     
     def run(self) -> None:
@@ -42,6 +42,8 @@ class MainMenu:
         Run the menu screen.
         """
         self.screen.blit(self.background, (0,0))
+
+        self.draw_logo(gs.screen_width//2 - 5, 180)
 
         self.start_button.draw_button()
         self.quit_button.draw_button()
@@ -69,4 +71,9 @@ class MainMenu:
 
         if event.type == pygame.MOUSEBUTTONUP:
             self.clicked = False
+
+    def draw_logo(self, x: int, y: int) -> None:
+        self.logo_image: Surface = pygame.image.load("assets/ui/logo2.png")
+        self.logo_rect: Rect = self.logo_image.get_rect(center=(x,y))
+        self.screen.blit(self.logo_image, self.logo_rect)
             

@@ -30,6 +30,7 @@ class Tetris:
         self.field_array: list[list[Block | Literal[0]]] = \
             self.get_field_array()
         self.tetromino: Tetronimo = Tetronimo(screen, self.block_group, self)
+        
 
 
     def run(self) -> None:
@@ -42,6 +43,8 @@ class Tetris:
         self.block_group.update()
 
         self.check_tetronimo_landed()
+
+        self.check_full_lines()
 
 
     def handle_events(self, event: Event) -> None:
@@ -66,7 +69,6 @@ class Tetris:
         
         if event.type == self.user_event:
             self.tetromino.update()
-
 
 
     def draw_grid(self) -> None:
@@ -124,6 +126,27 @@ class Tetris:
             pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
             self.put_blocks_in_array()
             self.tetromino = Tetronimo(self.screen, self.block_group, self)
+
+
+    def check_full_lines(self) -> None:
+        row: int = gs.grid_height - 1
+
+        for cell in range(gs.grid_height-1, -1, -1):
+            current_line: list = []
+            for line in range(gs.grid_width):
+                current_line.append(self.field_array[line][cell])
+                self.field_array[line][row] = self.field_array[line][cell]
+
+                if self.field_array[line][cell]:
+                    self.field_array[line][row].pos = Vector2(line, cell)
+            
+            if all(current_line):
+                for block in current_line:
+                    block.alive = False
+                    block = 0
+                pass
+            else:
+                row -= 1
 
 
 ### PIECE CLASS ####
@@ -227,16 +250,22 @@ class Block(Sprite):
         self.image: Surface = pygame.image.load("assets/game/block.png")
 
         self.rect: Rect = self.image.get_rect()
+
+        self.alive: bool = True
         
 
     def update(self) -> None:
         """
         Update the position of the block and draw it to the screen
         """
+        self.set_block_position()
+        self.is_alive()
+        self.draw_block()
+
+
+    def set_block_position(self) -> None:
         self.rect.topleft = self.pos * gs.tile_size + \
                             Vector2(gs.grid_start_x, gs.grid_start_y)
-        
-        self.draw_block()
 
 
     def rotate(self, pivot_pos: Vector2) -> None:
@@ -266,4 +295,8 @@ class Block(Sprite):
             (y < 0 or not self.tetronimo.tetris.field_array[x][y]):
             return False
         return True
+    
+    def is_alive(self) -> None:
+        if not self.alive:
+            self.kill()
 

@@ -41,7 +41,7 @@ class MainMenu:
         """
         self.screen.blit(self.background, (0,0))
 
-        self.draw_logo(gs.screen_width//2 - 5, 180)
+        self.draw_logo(gs.screen_width//2 - 3, 180)
 
         self.start_button.draw_button()
         self.quit_button.draw_button()
@@ -63,6 +63,12 @@ class MainMenu:
 
 
     def draw_logo(self, x: int, y: int) -> None:
+        """
+        Draw the title logo to the screen.
+
+        :param x: the center x position.
+        :param y: the center y position.
+        """
         self.logo_image: Surface = pygame.image.load("assets/ui/logo2.png")
         self.logo_rect: Rect = self.logo_image.get_rect(center=(x,y))
         self.screen.blit(self.logo_image, self.logo_rect)

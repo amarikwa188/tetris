@@ -59,9 +59,13 @@ class Tetris:
                 self.tetromino.move('left')
             if event.key == pygame.K_RIGHT:
                 self.tetromino.move('right')
+
+            if event.key == pygame.K_DOWN:
+                pygame.time.set_timer(self.user_event, gs.FAST_TIME_INTERVAL)
         
         if event.type == self.user_event:
             self.tetromino.update()
+
 
 
     def draw_grid(self) -> None:
@@ -116,6 +120,7 @@ class Tetris:
         when it has landed.
         """
         if self.tetromino.landed:
+            pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
             self.put_blocks_in_array()
             self.tetromino = Tetronimo(self.screen, self.block_group, self)
 

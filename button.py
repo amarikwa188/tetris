@@ -15,6 +15,7 @@ class Button:
         :param image: the default image of the button.
         :param hover_image: the image of the button when the mouse is hovering
         over it. If none is entered, the default image is always used.
+        :param scale: the scale of the button.
         """
         self.surface: Surface = surface
 
@@ -36,6 +37,12 @@ class Button:
 
 
     def scale_images(self, scale: float) -> None:
+        """
+        Resize the button images according to the given scale.
+
+        :param scale: the desired scale as a multiplier on the original
+        image dimensions. A value of one results in the original image size.
+        """
         self.main_image_width: int  = int(self.main_image.get_width() * scale)
         self.main_image_height: int = int(self.main_image.get_height() * scale)
 
@@ -81,7 +88,12 @@ class Button:
         self.surface.blit(self.image, self.rect)
 
 
-    def clicked(self) -> None:
+    def clicked(self) -> bool:
+        """
+        Check if the button has been clicked.
+
+        :return: True -> clicked, False -> not clicked.
+        """
         pos: tuple[int,int] = pygame.mouse.get_pos()
 
         if pygame.mouse.get_pressed()[0] == 1 and \
@@ -93,4 +105,5 @@ class Button:
         
         if not pygame.mouse.get_pressed()[0]:
             self.button_clicked = False
-            return False
+        
+        return False

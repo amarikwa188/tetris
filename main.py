@@ -47,7 +47,9 @@ class Game:
 
 
     def initialize_states(self) -> None:
-        """Create instances of the different game states."""
+        """
+        Save references to the different game states to the state manager.
+        """
         self.main_menu: MainMenu = MainMenu
         self.main_game: Tetris = Tetris
 

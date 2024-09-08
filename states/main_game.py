@@ -55,12 +55,13 @@ class Tetris:
                 menu_class = self.state_manager.get_state("main_menu")
                 self.state_manager.set_state(menu_class(self.screen,
                                                         self.state_manager))
-            if event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 self.tetromino.move('left')
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 self.tetromino.move('right')
-
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_SPACE:
+                self.tetromino.rotate()
+            elif event.key == pygame.K_DOWN:
                 pygame.time.set_timer(self.user_event, gs.FAST_TIME_INTERVAL)
         
         if event.type == self.user_event:
@@ -174,6 +175,20 @@ class Tetronimo:
         """
         self.move('down')
 
+    def rotate(self) -> None:
+        if self.shape == "O":
+            return 
+        
+        pivot_pos: Vector2 = self.blocks[0].pos
+        new_block_positions: list[Vector2] = [block.rotate(pivot_pos)
+                                              for block in self.blocks]
+
+        if not self.is_collide(new_block_positions):
+            for idx, block in enumerate(self.blocks):
+                block.pos = new_block_positions[idx]
+
+
+
     def is_collide(self, block_positions: list[Vector2]) -> bool:
         """
         Check if the tetronimo has collided with anything.
@@ -222,6 +237,12 @@ class Block(Sprite):
                             Vector2(gs.grid_start_x, gs.grid_start_y)
         
         self.draw_block()
+
+
+    def rotate(self, pivot_pos: Vector2) -> None:
+        translated: Vector2 = self.pos - pivot_pos
+        rotated: Vector2 = translated.rotate(90.0)
+        return rotated + pivot_pos
 
 
     def draw_block(self) -> None:

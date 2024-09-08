@@ -129,6 +129,9 @@ class Tetris:
 
 
     def check_full_lines(self) -> None:
+        """
+        Check for any completed rows.
+        """
         row: int = gs.grid_height - 1
 
         for cell in range(gs.grid_height-1, -1, -1):
@@ -144,7 +147,6 @@ class Tetris:
                 for block in current_line:
                     block.alive = False
                     block = 0
-                pass
             else:
                 row -= 1
 
@@ -178,6 +180,8 @@ class Tetronimo:
     def move(self, direction: str) -> None:
         """
         Move the tetronimo one place in a given direction.
+
+        :param direction: the direction to move 
         """
         move_direction: Vector2 = gs.MOVE_DIRECTIONS[direction.lower()]
 
@@ -198,7 +202,11 @@ class Tetronimo:
         """
         self.move('down')
 
+
     def rotate(self) -> None:
+        """
+        Rotate the tetronimo by 90 degrees.
+        """
         if self.shape == "O":
             return 
         
@@ -209,7 +217,6 @@ class Tetronimo:
         if not self.is_collide(new_block_positions):
             for idx, block in enumerate(self.blocks):
                 block.pos = new_block_positions[idx]
-
 
 
     def is_collide(self, block_positions: list[Vector2]) -> bool:
@@ -264,11 +271,19 @@ class Block(Sprite):
 
 
     def set_block_position(self) -> None:
+        """
+        Set the position of the rect.
+        """
         self.rect.topleft = self.pos * gs.tile_size + \
                             Vector2(gs.grid_start_x, gs.grid_start_y)
 
 
     def rotate(self, pivot_pos: Vector2) -> None:
+        """
+        Rotate the block by 90 degrees.
+
+        :param pivot_pos: the axis around which the block is rotated.
+        """
         translated: Vector2 = self.pos - pivot_pos
         rotated: Vector2 = translated.rotate(90.0)
         return rotated + pivot_pos
@@ -296,7 +311,10 @@ class Block(Sprite):
             return False
         return True
     
+
     def is_alive(self) -> None:
+        """
+        Check if th block has been removed from the grid.
+        """
         if not self.alive:
             self.kill()
-

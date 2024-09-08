@@ -36,7 +36,7 @@ class Tetris:
         """
         Run the tetris game state.
         """
-        self.screen.fill((230,230,230))
+        self.screen.fill((15,0,57))
         self.draw_grid()
 
         self.block_group.update()
@@ -73,9 +73,14 @@ class Tetris:
                 col_pos: int = col * gs.tile_size + gs.grid_start_x
                 row_pos: int = row * gs.tile_size + gs.grid_start_y
 
-                pygame.draw.rect(self.screen, (0,0,0),
+                pygame.draw.rect(self.screen, (150,150,150),
                                  (col_pos, row_pos, gs.tile_size,
                                   gs.tile_size), 1)
+                
+        pygame.draw.rect(self.screen, (255,255,255),
+                         (gs.grid_start_x, gs.grid_start_y,
+                         gs.tile_size * gs.grid_width,
+                         gs.tile_size * gs.grid_height), 2)
                 
 
     def put_blocks_in_array(self) -> None:
@@ -117,8 +122,17 @@ class Tetris:
 
 ### PIECE CLASS ####
 class Tetronimo:
+    """Represents an instance of a tetronimo"""
     def __init__(self, screen: Surface, block_group: Group,
                  tetris: Tetris) -> None:
+        """
+        Initializes a tetronimo object.
+
+        :param screen: the game screen.
+        :param block_group: a sprite group containing all the blocks of
+        the tetronimo.
+        :param tetris: the game instance this tetronimo belongs to.
+        """
         self.tetris: Tetris = tetris
 
         self.screen: Surface = screen
@@ -131,7 +145,11 @@ class Tetronimo:
         
         self.landed: bool = False
         
+
     def move(self, direction: str) -> None:
+        """
+        Move the tetronimo one place in a given direction.
+        """
         move_direction: Vector2 = gs.MOVE_DIRECTIONS[direction.lower()]
 
         new_block_positions = [block.pos + move_direction for block in self.blocks]
@@ -144,18 +162,38 @@ class Tetronimo:
             elif direction == 'down':
                 self.landed =  True
 
+
     def update(self) -> None:
+        """
+        Move the tetronimo down.
+        """
         self.move('down')
 
     def is_collide(self, block_positions: list[Vector2]) -> bool:
+        """
+        Check if the tetronimo has collided with anything.
+
+        :param block_positions: the positions of all blocks in the tetronimo.
+        :return: whether any blocks have collided.
+        """
         return any(map(Block.is_collide, self.blocks, block_positions))
 
 
 
 ### INDIVIDUAL BLOCK CLASS ###
 class Block(Sprite):
+    """Represents an instance of a single block."""
     def __init__(self, screen: Surface, position: tuple[int,int],
                  block_group: Group, tetronimo: Tetronimo) -> None:
+        """
+        Initialize a block object.
+
+        :param screen: the game screen.
+        :param position: the top left x and y grid coordinates.
+        :param block_group: a sprite group containing all the blocks in a 
+        specific tetronimo.
+        :param tetronimo: the tetronimo object this block belongs to. 
+        """
         super().__init__()
         self.screen: Surface = screen
 
@@ -166,22 +204,37 @@ class Block(Sprite):
 
         self.pos: Vector2 = Vector2(position) + gs.initial_offset
 
-        self.image: Surface = Surface((gs.tile_size, gs.tile_size))
-        self.image.fill("red")
+        self.image: Surface = pygame.image.load("assets/game/block.png")
 
         self.rect: Rect = self.image.get_rect()
         
+
     def update(self) -> None:
+        """
+        Update the position of the block and draw it to the screen
+        """
         self.rect.topleft = self.pos * gs.tile_size + \
                             Vector2(gs.grid_start_x, gs.grid_start_y)
         
         self.draw_block()
 
+
     def draw_block(self) -> None:
+        """
+        Draw the block to the screen.
+        """
         if self.rect.top >= gs.grid_start_y:
             self.screen.blit(self.image, self.rect)
 
+
     def is_collide(self, position: Vector2) -> bool:
+        """
+        Check whether a block has collided with the sides of the grid
+        or other blocks.
+
+        :param position: the position of the block.
+        :return: whether the block has collided.
+        """
         x,y = int(position.x), int(position.y)
         if 0 <= x < gs.grid_width and y < gs.grid_height and \
             (y < 0 or not self.tetronimo.tetris.field_array[x][y]):

@@ -21,8 +21,6 @@ class MainMenu:
         self.screen: Surface = screen
         self.state_manager: StateManager = state_manager
 
-        self.clicked: bool = False
-
         # main menu bg
         self.background: Surface = pygame.image\
             .load("assets/ui/main_menu_bg.png")
@@ -55,22 +53,14 @@ class MainMenu:
 
         :param event: the given user event.
         """
-        if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
-            self.clicked = True
+        if self.start_button.clicked():
+            self.game_class = self.state_manager.get_state("main_game")
+            self.state_manager.set_state(self.game_class(self.screen,
+                                                            self.state_manager))
 
-            pos: tuple[int,int] = pygame.mouse.get_pos()
+        if self.quit_button.clicked():
+            sys.exit()
 
-            if self.start_button.rect.collidepoint(pos):
-                self.game_class = self.state_manager.get_state("main_game")
-                self.state_manager.set_state(self.game_class(self.screen,
-                                                             self.state_manager))
-
-            if self.quit_button.rect.collidepoint(pos):
-                sys.exit()
-                
-
-        if event.type == pygame.MOUSEBUTTONUP:
-            self.clicked = False
 
     def draw_logo(self, x: int, y: int) -> None:
         self.logo_image: Surface = pygame.image.load("assets/ui/logo2.png")

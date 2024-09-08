@@ -1,5 +1,5 @@
 import pygame
-from pygame import Surface, Rect, Vector2
+from pygame import Surface, Rect
 
 
 class Button:
@@ -31,6 +31,8 @@ class Button:
         self.image: Surface = self.main_image
 
         self.rect: Rect = self.image.get_rect(center=(x,y))
+
+        self.button_clicked: bool = False
 
 
     def scale_images(self, scale: float) -> None:
@@ -77,3 +79,18 @@ class Button:
         if self.hover_image:
             self.hover()
         self.surface.blit(self.image, self.rect)
+
+
+    def clicked(self) -> None:
+        pos: tuple[int,int] = pygame.mouse.get_pos()
+
+        if pygame.mouse.get_pressed()[0] == 1 and \
+             not self.button_clicked and \
+             self.rect.collidepoint(pos):
+            
+            self.button_clicked = True
+            return True
+        
+        if not pygame.mouse.get_pressed()[0]:
+            self.button_clicked = False
+            return False

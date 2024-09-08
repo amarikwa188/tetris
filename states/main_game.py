@@ -13,7 +13,14 @@ from state_manager import StateManager
 
 ### GAME STATE CLASS ###
 class Tetris:
+    """Represents the tetris game state."""
     def __init__(self, screen: Surface, state_manager: StateManager) -> None:
+        """
+        Initialize an instance of the tetris game scene.
+
+        :param screen: the game screen.
+        :param state_manager: a reference to the state manager.
+        """
         self.screen: Surface = screen
         self.state_manager: StateManager =  state_manager
 
@@ -26,6 +33,9 @@ class Tetris:
 
 
     def run(self) -> None:
+        """
+        Run the tetris game state.
+        """
         self.screen.fill((230,230,230))
         self.draw_grid()
 
@@ -35,6 +45,11 @@ class Tetris:
 
 
     def handle_events(self, event: Event) -> None:
+        """
+        Handle user input.
+
+        :param event: the given user event.
+        """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 menu_class = self.state_manager.get_state("main_menu")
@@ -50,6 +65,9 @@ class Tetris:
 
 
     def draw_grid(self) -> None:
+        """
+        Draw the playing area to the screen.
+        """
         for col in range(gs.grid_width):
             for row in range(gs.grid_height):
                 col_pos: int = col * gs.tile_size + gs.grid_start_x
@@ -59,23 +77,39 @@ class Tetris:
                                  (col_pos, row_pos, gs.tile_size,
                                   gs.tile_size), 1)
                 
+
     def put_blocks_in_array(self) -> None:
+        """
+        Store the location of landed blocks in the field array to track
+        collisions with other blocks.
+        """
         for block in self.tetromino.blocks:
             x,y = int(block.pos.x), int(block.pos.y)
             self.field_array[x][y] = block
 
 
     def get_field_array(self) -> None:
+        """
+        Create a two-dimensional array to store the status of cells on the
+        grid.
+        """
         return [[0 for _ in range(gs.grid_height)]
                 for _ in range(gs.grid_width)]
 
                 
     def set_timer(self) -> None:
+        """
+        Create a user event to handle the movement of the blocks. 
+        """
         self.user_event: int = pygame.USEREVENT + 0
         pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)   
 
 
     def check_tetronimo_landed(self) -> None:
+        """
+        Store the blocks of a tetronimo in the field array and load a new one
+        when it has landed.
+        """
         if self.tetromino.landed:
             self.put_blocks_in_array()
             self.tetromino = Tetronimo(self.screen, self.block_group, self)

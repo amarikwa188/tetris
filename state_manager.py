@@ -15,14 +15,18 @@ class StateManager:
 
     def get_state(self, state_name: str) -> Any:
         """
-        Return the current state.
+        Return the a specified state class.
         
-        :return: the current state.
+        :return: the given state.
         """
 
         return self.states[state_name]
         
-    
 
     def get_current_state(self) -> Any:
+        """
+        Return the current state.
+
+        :return: the current state.
+        """
         return self.current_state  

@@ -17,6 +17,7 @@ class Game:
     def __init__(self) -> None:
         """Inititialize an instance of the game."""
         pygame.init()
+        pygame.display.set_caption("Tetris")
         self.screen: Surface = pygame.display.set_mode((gs.screen_width,
                                                         gs.screen_height))
         self.clock: Clock = pygame.time.Clock()

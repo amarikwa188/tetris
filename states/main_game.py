@@ -145,7 +145,10 @@ class Tetris:
         if self.tetromino.landed:
             pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
             self.put_blocks_in_array()
-            self.tetromino = Tetronimo(self.screen, self.block_group, self)
+            self.next_tetronimo.current = True
+            self.tetromino = self.next_tetronimo
+            self.next_tetronimo = Tetronimo(self.screen,
+                                            self.block_group, self, False)
 
 
     def check_full_lines(self) -> None:

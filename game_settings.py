@@ -20,7 +20,7 @@ grid_start_y: int = 50
 
 # tetronimo data
 initial_offset: Vector2 = Vector2(grid_width//2, 0)
-next_block_display_offset: Vector2 = Vector2(13, 5)
+next_block_display_offset: Vector2 = Vector2(13.3, 5)
 
 MOVE_DIRECTIONS: dict[str, Vector2] = {'left': Vector2(-1,0),
                                        'right': Vector2(1,0),

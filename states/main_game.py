@@ -26,7 +26,9 @@ class Tetris:
         self.state_manager: StateManager =  state_manager
 
         self.bg_color: tuple[int,int,int] = gs.DARKBLUE
-        self.ui_font: Font = pygame.font.Font("assets/fonts/pixel.TTF", 20)
+        self.ui_font: Font = pygame.font.Font("assets/fonts/gameboy.ttf", 20)
+
+        self.score: int = 0
 
         self.set_timer()
 
@@ -112,22 +114,43 @@ class Tetris:
 
     def draw_ui(self) -> None:
         self.display_next_block()
+        self.display_score()
 
 
     def display_next_block(self) -> None:
         next_text_image: Surface = self.ui_font.render("NEXT", True, gs.WHITE)
-        next_text_rect: Rect =  next_text_image.get_rect(center=(312, 80))
+        next_text_rect: Rect = next_text_image.get_rect(center=(317, 80))
         self.screen.blit(next_text_image, next_text_rect)
 
         next_rect: Rect = Rect(0,0, 100, 100)
-        next_rect.center = (310, 150)
+        next_rect.center = (315, 150)
 
-        pygame.draw.rect(self.screen, gs.WHITE, next_rect, 1, 7)
+        pygame.draw.rect(self.screen, gs.WHITE, next_rect, 2, 7)
 
-        next_image: Surface = pygame.image.load(f"assets/game/"
-                                                f"{self.next_tetronimo.shape}.png")
-        next_image_rect: Rect = next_image.get_rect(center=(310,150))
+        next_image: Surface = pygame.image\
+                    .load(f"assets/game/{self.next_tetronimo.shape}.png")
+        next_image_rect: Rect = next_image.get_rect(center=(315,150))
         self.screen.blit(next_image, next_image_rect)
+
+    
+    def display_score(self) -> None:
+        # display 'score' text
+        score_text_image: Surface = self.ui_font.render("SCORE", True,
+                                                        gs.WHITE)
+        score_text_rect: Rect = score_text_image.get_rect(center=(317, 305))
+        self.screen.blit(score_text_image, score_text_rect)
+
+        # draw bounding rectangle
+        score_rect: Rect = Rect(0,0, 120, 70)
+        score_rect.center = (315, 360)
+
+        pygame.draw.rect(self.screen, gs.WHITE, score_rect, 2, 7)
+
+        # display score
+        score_image: Surface = self.ui_font.render(f"{self.score:03d}", True,
+                                                   gs.WHITE)
+        score_rect: Rect = score_image.get_rect(center=(315, 360))
+        self.screen.blit(score_image, score_rect)
                 
 
     def put_blocks_in_array(self) -> None:

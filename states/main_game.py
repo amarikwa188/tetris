@@ -30,6 +30,8 @@ class Tetris:
         self.field_array: list[list[Block | Literal[0]]] = \
             self.get_field_array()
         self.tetromino: Tetronimo = Tetronimo(screen, self.block_group, self)
+
+        self.game_paused: bool = False
         
 
 
@@ -40,11 +42,15 @@ class Tetris:
         self.screen.fill((15,0,57))
         self.draw_grid()
 
-        self.block_group.update()
+        if not self.game_paused:
+            self.block_group.update()
 
-        self.check_tetronimo_landed()
+            self.check_tetronimo_landed()
 
-        self.check_full_lines()
+            self.check_full_lines()
+
+        for block in self.block_group.sprites():
+            block.draw_block()
 
 
     def handle_events(self, event: Event) -> None:
@@ -54,20 +60,25 @@ class Tetris:
         :param event: the given user event.
         """
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_p:
                 menu_class = self.state_manager.get_state("main_menu")
                 self.state_manager.set_state(menu_class(self.screen,
                                                         self.state_manager))
-            elif event.key == pygame.K_LEFT:
-                self.tetromino.move('left')
-            elif event.key == pygame.K_RIGHT:
-                self.tetromino.move('right')
-            elif event.key == pygame.K_SPACE:
-                self.tetromino.rotate()
-            elif event.key == pygame.K_DOWN:
-                pygame.time.set_timer(self.user_event, gs.FAST_TIME_INTERVAL)
+            
+            if not self.game_paused:
+                if event.key == pygame.K_LEFT:
+                    self.tetromino.move('left')
+                if event.key == pygame.K_RIGHT:
+                    self.tetromino.move('right')
+                if event.key == pygame.K_SPACE:
+                    self.tetromino.rotate()
+                if event.key == pygame.K_DOWN:
+                    pygame.time.set_timer(self.user_event, gs.FAST_TIME_INTERVAL)
+
+            if event.key == pygame.K_ESCAPE:
+                self.game_paused = not self.game_paused
         
-        if event.type == self.user_event:
+        if event.type == self.user_event and not self.game_paused:
             self.tetromino.update()
 
 
@@ -267,7 +278,7 @@ class Block(Sprite):
         """
         self.set_block_position()
         self.is_alive()
-        self.draw_block()
+        # self.draw_block()
 
 
     def set_block_position(self) -> None:

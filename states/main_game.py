@@ -143,12 +143,15 @@ class Tetris:
         when it has landed.
         """
         if self.tetromino.landed:
-            pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
-            self.put_blocks_in_array()
-            self.next_tetronimo.current = True
-            self.tetromino = self.next_tetronimo
-            self.next_tetronimo = Tetronimo(self.screen,
-                                            self.block_group, self, False)
+            if self.is_game_over():
+                self.__init__(self.screen, self.state_manager)
+            else:
+                pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
+                self.put_blocks_in_array()
+                self.next_tetronimo.current = True
+                self.tetromino = self.next_tetronimo
+                self.next_tetronimo = Tetronimo(self.screen,
+                                                self.block_group, self, False)
 
 
     def check_full_lines(self) -> None:
@@ -172,6 +175,10 @@ class Tetris:
                     block = 0
             else:
                 row -= 1
+
+    def is_game_over(self) -> bool:
+        if self.tetromino.blocks[0].pos.y == gs.initial_offset[1]:
+            return True
 
 
 ### PIECE CLASS ####

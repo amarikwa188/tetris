@@ -24,12 +24,16 @@ class Tetris:
         self.screen: Surface = screen
         self.state_manager: StateManager =  state_manager
 
+        self.bg_color: tuple[int,int,int] = (15,0,57)
+
         self.set_timer()
 
         self.block_group: Group = Group()
         self.field_array: list[list[Block | Literal[0]]] = \
             self.get_field_array()
         self.tetromino: Tetronimo = Tetronimo(screen, self.block_group, self)
+        self.next_tetronimo: Tetronimo = \
+            Tetronimo(screen, self.block_group, self, False)
 
         self.game_paused: bool = False
         
@@ -39,7 +43,12 @@ class Tetris:
         """
         Run the tetris game state.
         """
-        self.screen.fill((15,0,57))
+        if self.game_paused:
+            self.bg_color = (255,255,255)
+        else:
+            self.bg_color = (15,0,57)
+
+        self.screen.fill(self.bg_color)
         self.draw_grid()
 
         if not self.game_paused:
@@ -166,7 +175,7 @@ class Tetris:
 class Tetronimo:
     """Represents an instance of a tetronimo"""
     def __init__(self, screen: Surface, block_group: Group,
-                 tetris: Tetris) -> None:
+                 tetris: Tetris, current: bool=True) -> None:
         """
         Initializes a tetronimo object.
 
@@ -186,6 +195,7 @@ class Tetronimo:
                                     for pos in gs.TETROMINOES[self.shape]]
         
         self.landed: bool = False
+        self.current: bool = current
         
 
     def move(self, direction: str) -> None:
@@ -264,6 +274,8 @@ class Block(Sprite):
         self.block_group.add(self)
 
         self.pos: Vector2 = Vector2(position) + gs.initial_offset
+        self.next_pos: Vector2 = Vector2(position) + \
+            gs.next_block_display_offset
 
         self.image: Surface = pygame.image.load("assets/game/block.png")
 
@@ -278,14 +290,14 @@ class Block(Sprite):
         """
         self.set_block_position()
         self.is_alive()
-        # self.draw_block()
 
 
     def set_block_position(self) -> None:
         """
         Set the position of the rect.
         """
-        self.rect.topleft = self.pos * gs.tile_size + \
+        pos: Vector2 = [self.next_pos, self.pos][self.tetronimo.current]
+        self.rect.topleft = pos * gs.tile_size + \
                             Vector2(gs.grid_start_x, gs.grid_start_y)
 
 

@@ -113,20 +113,29 @@ class Tetris:
         
 
     def draw_ui(self) -> None:
+        """
+        Draw the game ui to the screen.
+        """
         self.display_next_block()
         self.display_score()
 
 
     def display_next_block(self) -> None:
+        """
+        Display the next block.
+        """
+        # display 'next' text
         next_text_image: Surface = self.ui_font.render("NEXT", True, gs.WHITE)
         next_text_rect: Rect = next_text_image.get_rect(center=(317, 80))
         self.screen.blit(next_text_image, next_text_rect)
 
+        # draw bounding box around the block
         next_rect: Rect = Rect(0,0, 100, 100)
         next_rect.center = (315, 150)
 
         pygame.draw.rect(self.screen, gs.WHITE, next_rect, 2, 7)
 
+        # draw the appropriate tetronimo
         next_image: Surface = pygame.image\
                     .load(f"assets/game/{self.next_tetronimo.shape}.png")
         next_image_rect: Rect = next_image.get_rect(center=(315,150))
@@ -134,6 +143,9 @@ class Tetris:
 
     
     def display_score(self) -> None:
+        """
+        Display the current score.
+        """
         # display 'score' text
         score_text_image: Surface = self.ui_font.render("SCORE", True,
                                                         gs.WHITE)
@@ -221,6 +233,11 @@ class Tetris:
 
 
     def is_game_over(self) -> bool:
+        """
+        Check when the game is over.
+
+        :return: True -> game over, False -> not game over.
+        """
         if self.tetromino.blocks[0].pos.y == gs.initial_offset[1]:
             return True
 
@@ -237,6 +254,7 @@ class Tetronimo:
         :param block_group: a sprite group containing all the blocks of
         the tetronimo.
         :param tetris: the game instance this tetronimo belongs to.
+        :param current: whether this tetronimo object is in play.
         """
         self.tetris: Tetris = tetris
 

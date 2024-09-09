@@ -6,6 +6,7 @@ from pygame import Vector2
 from pygame import Surface, Rect
 from pygame.event import Event
 from pygame.sprite import Sprite, Group
+from pygame.font import Font
 
 import game_settings as gs
 from state_manager import StateManager
@@ -24,7 +25,8 @@ class Tetris:
         self.screen: Surface = screen
         self.state_manager: StateManager =  state_manager
 
-        self.bg_color: tuple[int,int,int] = (15,0,57)
+        self.bg_color: tuple[int,int,int] = gs.DARKBLUE
+        self.ui_font: Font = pygame.font.Font("assets/fonts/pixel.TTF", 20)
 
         self.set_timer()
 
@@ -43,15 +45,10 @@ class Tetris:
         """
         Run the tetris game state.
         """
-        if self.game_paused:
-            self.bg_color = (255,255,255)
-        else:
-            self.bg_color = (15,0,57)
-
         self.screen.fill(self.bg_color)
         self.draw_grid()
-        self.draw_bounding_rectangles()
-        self.display_next_block()
+        self.draw_ui()
+    
 
         if not self.game_paused:
             self.block_group.update()
@@ -84,7 +81,8 @@ class Tetris:
                 if event.key == pygame.K_SPACE:
                     self.tetromino.rotate()
                 if event.key == pygame.K_DOWN:
-                    pygame.time.set_timer(self.user_event, gs.FAST_TIME_INTERVAL)
+                    pygame.time.set_timer(self.user_event,
+                                          gs.FAST_TIME_INTERVAL)
 
             if event.key == pygame.K_ESCAPE:
                 self.game_paused = not self.game_paused
@@ -102,26 +100,33 @@ class Tetris:
                 col_pos: int = col * gs.tile_size + gs.grid_start_x
                 row_pos: int = row * gs.tile_size + gs.grid_start_y
 
-                pygame.draw.rect(self.screen, (150,150,150),
+                pygame.draw.rect(self.screen, gs.GREY,
                                  (col_pos, row_pos, gs.tile_size,
                                   gs.tile_size), 1)
                 
-        pygame.draw.rect(self.screen, (255,255,255),
+        pygame.draw.rect(self.screen, gs.WHITE,
                          (gs.grid_start_x, gs.grid_start_y,
                          gs.tile_size * gs.grid_width,
                          gs.tile_size * gs.grid_height), 2)
         
-    
-    def draw_bounding_rectangles(self) -> None:
-        next_rect: Rect = Rect(0,0, 100, 100)
-        next_rect.center = (310, 140)
 
-        pygame.draw.rect(self.screen, (255,255,255), next_rect, 1, 7)
+    def draw_ui(self) -> None:
+        self.display_next_block()
 
 
     def display_next_block(self) -> None:
-        next_image: Surface = pygame.image.load(f"assets/game/{self.next_tetronimo.shape}.png")
-        next_image_rect: Rect = next_image.get_rect(center=(310,140))
+        next_text_image: Surface = self.ui_font.render("NEXT", True, gs.WHITE)
+        next_text_rect: Rect =  next_text_image.get_rect(center=(312, 80))
+        self.screen.blit(next_text_image, next_text_rect)
+
+        next_rect: Rect = Rect(0,0, 100, 100)
+        next_rect.center = (310, 150)
+
+        pygame.draw.rect(self.screen, gs.WHITE, next_rect, 1, 7)
+
+        next_image: Surface = pygame.image.load(f"assets/game/"
+                                                f"{self.next_tetronimo.shape}.png")
+        next_image_rect: Rect = next_image.get_rect(center=(310,150))
         self.screen.blit(next_image, next_image_rect)
                 
 

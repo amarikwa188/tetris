@@ -7,6 +7,12 @@ screen_height: int = 500
 # framerate
 framerate: int = 60
 
+# color definitions
+WHITE: tuple[int,int,int] = (255,255,255)
+BLACK: tuple[int,int,int] = (0,0,0)
+GREY: tuple[int,int,int] = (150,150,150)
+DARKBLUE: tuple[int,int,int] = (15,0,57)
+
 # game stats
 tile_size: int = 20
 

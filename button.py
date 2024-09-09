@@ -90,20 +90,25 @@ class Button:
 
     def clicked(self) -> bool:
         """
-        Check if the button has been clicked.
+        Check if the button has been clicked. The button registers as clicked
+        when the left mouse button is released and the mouse is hovering over
+        the button.
 
         :return: True -> clicked, False -> not clicked.
         """
+        
         pos: tuple[int,int] = pygame.mouse.get_pos()
 
-        if pygame.mouse.get_pressed()[0] == 1 and \
-             not self.button_clicked and \
-             self.rect.collidepoint(pos):
-            
+        mouse_pressed = pygame.mouse.get_pressed()[0] == 1
+
+        if mouse_pressed and self.rect.collidepoint(pos) and \
+             not self.button_clicked:
             self.button_clicked = True
-            return True
-        
-        if not pygame.mouse.get_pressed()[0]:
+
+        if not self.rect.collidepoint(pos):
             self.button_clicked = False
-        
-        return False
+
+        if not mouse_pressed and self.button_clicked and \
+             self.rect.collidepoint(pos):
+            self.button_clicked = False
+            return True

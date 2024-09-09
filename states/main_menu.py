@@ -27,8 +27,8 @@ class MainMenu:
 
         # main menu buttons
         self.start_button: Button = Button(screen, gs.screen_width//2, 300,
-                                           "assets/ui/play_wide.png",
-                                           "assets/ui/play_wide_H.png", 0.8)
+                                           "assets/ui/play.png",
+                                           "assets/ui/play_H.png", 0.8)
 
         self.quit_button: Button = Button(screen, gs.screen_width//2, 340,
                                           "assets/ui/exit.png",
@@ -69,7 +69,7 @@ class MainMenu:
         :param x: the center x position.
         :param y: the center y position.
         """
-        self.logo_image: Surface = pygame.image.load("assets/ui/logo2.png")
+        self.logo_image: Surface = pygame.image.load("assets/ui/logo.png")
         self.logo_rect: Rect = self.logo_image.get_rect(center=(x,y))
         self.screen.blit(self.logo_image, self.logo_rect)
             

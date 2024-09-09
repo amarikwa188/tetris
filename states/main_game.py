@@ -50,6 +50,8 @@ class Tetris:
 
         self.screen.fill(self.bg_color)
         self.draw_grid()
+        self.draw_bounding_rectangles()
+        self.display_next_block()
 
         if not self.game_paused:
             self.block_group.update()
@@ -108,6 +110,19 @@ class Tetris:
                          (gs.grid_start_x, gs.grid_start_y,
                          gs.tile_size * gs.grid_width,
                          gs.tile_size * gs.grid_height), 2)
+        
+    
+    def draw_bounding_rectangles(self) -> None:
+        next_rect: Rect = Rect(0,0, 100, 100)
+        next_rect.center = (310, 140)
+
+        pygame.draw.rect(self.screen, (255,255,255), next_rect, 1, 7)
+
+
+    def display_next_block(self) -> None:
+        next_image: Surface = pygame.image.load(f"assets/game/{self.next_tetronimo.shape}.png")
+        next_image_rect: Rect = next_image.get_rect(center=(310,140))
+        self.screen.blit(next_image, next_image_rect)
                 
 
     def put_blocks_in_array(self) -> None:
@@ -175,6 +190,7 @@ class Tetris:
                     block = 0
             else:
                 row -= 1
+
 
     def is_game_over(self) -> bool:
         if self.tetromino.blocks[0].pos.y == gs.initial_offset[1]:

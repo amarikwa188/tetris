@@ -94,6 +94,12 @@ class Tetris:
         if event.type == self.user_event and not self.game_paused:
             self.tetromino.update()
 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos: tuple[int,int] = pygame.mouse.get_pos()
+
+            if self.resume_rect.collidepoint(pos) and self.game_paused:
+                self.game_paused = False
+            
 
     def draw_grid(self) -> None:
         """
@@ -138,8 +144,22 @@ class Tetris:
         self.pause_text_image: Surface = pause_font\
                         .render("PAUSED", True, gs.WHITE)
         self.pause_text_rect: Rect = self.pause_text_image.get_rect()
-        self.pause_text_rect.center = (gs.screen_width//2+10,
-                                       gs.screen_height//2)
+        self.pause_text_rect.center = (gs.screen_width//2+10, 200)
+        
+        # options text
+        options_font: Font = pygame.font\
+                            .Font("assets/fonts/gameboy.ttf", 20)
+        
+        self.resume_image: Surface = options_font.render("RESUME", True,
+                                                         gs.WHITE)
+        self.resume_rect: Rect = self.resume_image.get_rect()
+        self.resume_rect.center = (gs.screen_width//2, 260)
+
+        self.resume_alt_image: Surface = options_font.render("-RESUME-", True,
+                                                             gs.WHITE)
+        self.resume_alt_rect: Rect = self.resume_alt_image.get_rect()
+        self.resume_alt_rect.center = (gs.screen_width//2, 260)
+
     
 
     def display_pause_screen(self) -> None:
@@ -148,6 +168,12 @@ class Tetris:
 
         self.screen.blit(self.pause_screen, self.pause_screen_rect)
         self.screen.blit(self.pause_text_image, self.pause_text_rect)
+
+        pos: tuple[int,int] = pygame.mouse.get_pos()
+        if self.resume_rect.collidepoint(pos):
+            self.screen.blit(self.resume_alt_image, self.resume_alt_rect)
+        else:
+            self.screen.blit(self.resume_image, self.resume_rect)
 
 
     def display_next_block(self) -> None:

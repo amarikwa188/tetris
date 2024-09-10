@@ -72,11 +72,6 @@ class Tetris:
         :param event: the given user event.
         """
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
-                menu_class = self.state_manager.get_state("main_menu")
-                self.state_manager.set_state(menu_class(self.screen,
-                                                        self.state_manager))
-            
             if not self.game_paused:
                 if event.key == pygame.K_LEFT:
                     self.tetromino.move('left')
@@ -97,8 +92,13 @@ class Tetris:
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos: tuple[int,int] = pygame.mouse.get_pos()
 
-            if self.resume_rect.collidepoint(pos) and self.game_paused:
-                self.game_paused = False
+            if self.game_paused:
+                if self.resume_alt_rect.collidepoint(pos):
+                    self.game_paused = False
+                elif self.menu_alt_rect.collidepoint(pos):
+                    menu_class = self.state_manager.get_state("main_menu")
+                    self.state_manager.set_state(menu_class(self.screen,
+                                                        self.state_manager))
             
 
     def draw_grid(self) -> None:
@@ -150,6 +150,7 @@ class Tetris:
         options_font: Font = pygame.font\
                             .Font("assets/fonts/gameboy.ttf", 20)
         
+        ## resume
         self.resume_image: Surface = options_font.render("RESUME", True,
                                                          gs.WHITE)
         self.resume_rect: Rect = self.resume_image.get_rect()
@@ -160,7 +161,17 @@ class Tetris:
         self.resume_alt_rect: Rect = self.resume_alt_image.get_rect()
         self.resume_alt_rect.center = (gs.screen_width//2, 260)
 
-    
+        # menu
+        self.menu_image: Surface = options_font.render("MENU", True, gs.WHITE)
+        self.menu_rect: Rect = self.menu_image.get_rect()
+        self.menu_rect.center = (gs.screen_width//2, 300)
+
+        self.menu_alt_image: Surface = options_font.render("-MENU-", True,
+                                                           gs.WHITE)
+        self.menu_alt_rect: Rect = self.menu_alt_image.get_rect()
+        self.menu_alt_rect.center = (gs.screen_width//2, 300)
+        
+
 
     def display_pause_screen(self) -> None:
         self.pause_screen.fill(gs.BLACK)
@@ -174,6 +185,11 @@ class Tetris:
             self.screen.blit(self.resume_alt_image, self.resume_alt_rect)
         else:
             self.screen.blit(self.resume_image, self.resume_rect)
+
+        if self.menu_rect.collidepoint(pos):
+            self.screen.blit(self.menu_alt_image, self.menu_alt_rect)
+        else:
+            self.screen.blit(self.menu_image, self.menu_rect)
 
 
     def display_next_block(self) -> None:

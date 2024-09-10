@@ -32,6 +32,7 @@ class Tetris:
         self.ui_font: Font = pygame.font.Font("assets/fonts/gameboy.ttf", 20)
 
         self.score: int = 0
+        self.final_score: int = 0
 
         self.set_timer()
 
@@ -116,6 +117,17 @@ class Tetris:
                     self.state_manager.set_state(menu_class(self.screen,
                                                         self.state_manager,
                                                         self.audio_handler))
+            
+            if self.game_over:
+                if self.again_alt_rect.collidepoint(pos):
+                    self.audio_handler.pause_click.play()
+                    self.reset_game()
+                elif self.main_alt_rect.collidepoint(pos):
+                    self.audio_handler.pause_click.play()
+                    menu_class = self.state_manager.get_state("main_menu")
+                    self.state_manager.set_state(menu_class(self.screen,
+                                                        self.state_manager,
+                                                        self.audio_handler))
                     
 
     def reset_game(self) -> None:
@@ -155,10 +167,11 @@ class Tetris:
     def create_end_screen(self) -> None:
         self.end_screen: Surface = Surface((gs.screen_width,
                                             gs.screen_height))
-        self.end_screen_rect: Rect =self.end_screen.get_rect()
+        self.end_screen_rect: Rect = self.end_screen.get_rect()
         self.end_screen_rect.center = (gs.screen_width//2,
                                        gs.screen_height//2)
 
+        # game over
         game_over_font: Font = pygame.font.Font("assets/fonts/gameboy.ttf",
                                                 40)
         
@@ -166,9 +179,35 @@ class Tetris:
                                                              True,
                                                              gs.WHITE)
         self.over_rect: Rect = self.over_text.get_rect()
-        self.over_rect.center = (gs.screen_width//2, 200)
+        self.over_rect.center = (gs.screen_width//2+5, 150)
 
+        # buttons
+        self.again_image: Surface = self.options_font.render("PLAY AGAIN",
+                                                             True,
+                                                             gs.WHITE) 
+        self.again_rect: Rect = self.again_image.get_rect()  
+        self.again_rect.center = (gs.screen_width//2,
+                                  300)
+    
+        self.again_alt_image: Surface = self.options_font.render("-PLAY AGAIN-",
+                                                                 True,
+                                                                 gs.WHITE)
+        self.again_alt_rect: Rect = self.again_alt_image.get_rect()
+        self.again_alt_rect.center = (gs.screen_width//2,
+                                      300)
         
+
+        self.main_image: Surface = self.options_font.render("MAIN MENU",
+                                                            True, gs.WHITE)
+        self.main_rect: Rect = self.main_image.get_rect()
+        self.main_rect.center = (gs.screen_width//2,
+                                 350)
+        
+        self.main_alt_image: Surface = self.options_font.render("-MAIN MENU-",
+                                                                True, gs.WHITE)
+        self.main_alt_rect: Rect = self.main_alt_image.get_rect()
+        self.main_alt_rect.center = (gs.screen_width//2, 
+                                     350)
 
         
     
@@ -176,7 +215,25 @@ class Tetris:
         self.end_screen.fill(gs.DARKBLUE)
         self.screen.blit(self.end_screen, self.end_screen_rect)
 
+        self.score_image: Surface = self.options_font\
+                                    .render(f"Score:{self.final_score}",
+                                            True, gs.WHITE)
+        self.score_rect: Rect = self.score_image.get_rect()
+        self.score_rect.center = (gs.screen_width//2, 200)
+
+        self.screen.blit(self.score_image, self.score_rect)
         self.screen.blit(self.over_text, self.over_rect)
+        
+        pos: tuple[int,int] = pygame.mouse.get_pos()
+        if self.again_rect.collidepoint(pos):
+            self.screen.blit(self.again_alt_image, self.again_alt_rect)
+        else:
+            self.screen.blit(self.again_image, self.again_rect)
+
+        if self.main_rect.collidepoint(pos):
+            self.screen.blit(self.main_alt_image, self.main_alt_rect)
+        else:
+            self.screen.blit(self.main_image, self.main_rect)
         
 
     def create_pause_screen(self) -> None:
@@ -324,6 +381,7 @@ class Tetris:
         """
         if self.tetromino.landed:
             if self.is_game_over():
+                self.final_score = self.score
                 self.game_over = True
                 self.display_end_screen()
             else:

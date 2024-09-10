@@ -45,6 +45,7 @@ class Tetris:
         self.game_paused: bool = False
         self.create_pause_screen()
 
+
     def run(self) -> None:
         """
         Run the tetris game state.
@@ -53,8 +54,9 @@ class Tetris:
         self.draw_grid()
         self.draw_ui()
     
-
         if not self.game_paused:
+            pygame.mouse.set_visible(False)
+
             self.block_group.update()
 
             self.check_tetronimo_landed()
@@ -65,6 +67,7 @@ class Tetris:
             block.draw_block()
 
         if self.game_paused:
+            pygame.mouse.set_visible(True)
             self.display_pause_screen()
 
 
@@ -87,6 +90,7 @@ class Tetris:
                                           gs.FAST_TIME_INTERVAL)
 
             if event.key == pygame.K_ESCAPE:
+                self.audio_handler.pause_click.play()
                 self.game_paused = not self.game_paused
         
         if event.type == self.user_event and not self.game_paused:
@@ -98,7 +102,9 @@ class Tetris:
             if self.game_paused:
                 if self.resume_alt_rect.collidepoint(pos):
                     self.game_paused = False
+                    self.audio_handler.pause_click.play()
                 elif self.menu_alt_rect.collidepoint(pos):
+                    self.audio_handler.pause_click.play()
                     menu_class = self.state_manager.get_state("main_menu")
                     self.state_manager.set_state(menu_class(self.screen,
                                                         self.state_manager,

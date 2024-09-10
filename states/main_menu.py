@@ -85,6 +85,9 @@ class MainMenu:
 
 
     def draw_credits(self) -> None:
+        """
+        Render the credits on the screen.
+        """
         image: Surface = self.credits.render("A.AMARIKWA", True,
                                              gs.WHITE)
         rect: Rect = image.get_rect()

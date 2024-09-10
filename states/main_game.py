@@ -165,6 +165,9 @@ class Tetris:
 
     
     def create_end_screen(self) -> None:
+        """
+        Create the game over screen.
+        """
         self.end_screen: Surface = Surface((gs.screen_width,
                                             gs.screen_height))
         self.end_screen_rect: Rect = self.end_screen.get_rect()
@@ -209,9 +212,11 @@ class Tetris:
         self.main_alt_rect.center = (gs.screen_width//2, 
                                      350)
 
-        
     
     def display_end_screen(self) -> None:
+        """
+        Display the game over screen.
+        """
         self.end_screen.fill(gs.DARKBLUE)
         self.screen.blit(self.end_screen, self.end_screen_rect)
 
@@ -237,6 +242,9 @@ class Tetris:
         
 
     def create_pause_screen(self) -> None:
+        """
+        Create the pause screen.
+        """
         # main background surface
         self.pause_screen: Surface = Surface((gs.screen_width,
                                              gs.screen_height))
@@ -284,6 +292,9 @@ class Tetris:
         
 
     def display_pause_screen(self) -> None:
+        """
+        Display the pause screen.
+        """
         self.pause_screen.fill(gs.BLACK)
         self.pause_screen.set_alpha(220)
 

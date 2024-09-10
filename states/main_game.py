@@ -40,8 +40,7 @@ class Tetris:
             Tetronimo(screen, self.block_group, self, False)
 
         self.game_paused: bool = False
-        
-
+        self.create_pause_screen()
 
     def run(self) -> None:
         """
@@ -61,6 +60,9 @@ class Tetris:
 
         for block in self.block_group.sprites():
             block.draw_block()
+
+        if self.game_paused:
+            self.display_pause_screen()
 
 
     def handle_events(self, event: Event) -> None:
@@ -118,6 +120,34 @@ class Tetris:
         """
         self.display_next_block()
         self.display_score()
+        
+
+    def create_pause_screen(self) -> None:
+        # main background surface
+        self.pause_screen: Surface = Surface((gs.screen_width,
+                                             gs.screen_height))
+        
+        self.pause_screen_rect: Rect = self.pause_screen.get_rect()
+        self.pause_screen_rect.center = (gs.screen_width//2,
+                                         gs.screen_height//2)
+        
+        # pause font
+        pause_font: Font = pygame.font\
+                            .Font("assets/fonts/gameboy.ttf", 50)
+        
+        self.pause_text_image: Surface = pause_font\
+                        .render("PAUSED", True, gs.WHITE)
+        self.pause_text_rect: Rect = self.pause_text_image.get_rect()
+        self.pause_text_rect.center = (gs.screen_width//2+10,
+                                       gs.screen_height//2)
+    
+
+    def display_pause_screen(self) -> None:
+        self.pause_screen.fill(gs.BLACK)
+        self.pause_screen.set_alpha(220)
+
+        self.screen.blit(self.pause_screen, self.pause_screen_rect)
+        self.screen.blit(self.pause_text_image, self.pause_text_rect)
 
 
     def display_next_block(self) -> None:
@@ -201,6 +231,7 @@ class Tetris:
             if self.is_game_over():
                 self.__init__(self.screen, self.state_manager)
             else:
+                self.score += 10
                 pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
                 self.put_blocks_in_array()
                 self.next_tetronimo.current = True
@@ -225,6 +256,7 @@ class Tetris:
                     self.field_array[line][row].pos = Vector2(line, cell)
             
             if all(current_line):
+                self.score += 100
                 for block in current_line:
                     block.alive = False
                     block = 0

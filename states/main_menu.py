@@ -30,17 +30,17 @@ class MainMenu:
             .load("assets/ui/main_menu_bg.png")
 
         # main menu buttons
-        self.start_button: Button = Button(screen, gs.screen_width//2, 280,
+        self.start_button: Button = Button(screen, gs.screen_width//2, 290,
                                            "assets/ui/play.png",
-                                           "assets/ui/play_H.png", 0.8,
+                                           "assets/ui/play_H.png", 0.9,
                                            self.audio_handler.pause_click)
 
-        self.quit_button: Button = Button(screen, gs.screen_width//2, 320,
+        self.quit_button: Button = Button(screen, gs.screen_width//2, 340,
                                           "assets/ui/exit.png",
                                           "assets/ui/exit_H.png", 0.7,
                                           self.audio_handler.pause_click)
         
-        self.credits: Font = pygame.font.Font("assets/fonts/gameboy.ttf", 10)
+        self.credits: Font = pygame.font.Font("assets/fonts/gameboy.ttf", 12)
 
     
     def run(self) -> None:
@@ -89,7 +89,7 @@ class MainMenu:
                                              gs.WHITE)
         rect: Rect = image.get_rect()
         rect.centerx = gs.screen_width//2
-        rect.centery = gs.screen_height - 110
+        rect.centery = gs.screen_height - 105
 
         self.screen.blit(image, rect)
             

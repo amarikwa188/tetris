@@ -43,32 +43,39 @@ class Tetris:
             Tetronimo(screen, self.block_group, self, False)
 
         self.game_paused: bool = False
+        self.game_over: bool = False
         self.create_pause_screen()
+        self.create_end_screen()
 
 
     def run(self) -> None:
         """
         Run the tetris game state.
         """
-        self.screen.fill(self.bg_color)
-        self.draw_grid()
-        self.draw_ui()
-    
-        if not self.game_paused:
-            pygame.mouse.set_visible(False)
+        if not self.game_over:
+            self.screen.fill(self.bg_color)
+            self.draw_grid()
+            self.draw_ui()
+        
+            if not self.game_paused:
+                pygame.mouse.set_visible(False)
 
-            self.block_group.update()
+                self.block_group.update()
 
-            self.check_tetronimo_landed()
+                self.check_tetronimo_landed()
 
-            self.check_full_lines()
+                self.check_full_lines()
 
-        for block in self.block_group.sprites():
-            block.draw_block()
+            for block in self.block_group.sprites():
+                block.draw_block()
 
-        if self.game_paused:
+            if self.game_paused:
+                pygame.mouse.set_visible(True)
+                self.display_pause_screen()
+        
+        if self.game_over:
             pygame.mouse.set_visible(True)
-            self.display_pause_screen()
+            self.display_end_screen()
 
 
     def handle_events(self, event: Event) -> None:
@@ -77,7 +84,7 @@ class Tetris:
 
         :param event: the given user event.
         """
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN and not self.game_over:
             if not self.game_paused:
                 if event.key == pygame.K_LEFT:
                     self.tetromino.move('left')
@@ -112,6 +119,9 @@ class Tetris:
                     
 
     def reset_game(self) -> None:
+        """
+        Start a new game.
+        """
         self.__init__(self.screen, self.state_manager, self.audio_handler)
             
 
@@ -140,6 +150,33 @@ class Tetris:
         """
         self.display_next_block()
         self.display_score()
+
+    
+    def create_end_screen(self) -> None:
+        self.end_screen: Surface = Surface((gs.screen_width,
+                                            gs.screen_height))
+        self.end_screen_rect: Rect =self.end_screen.get_rect()
+        self.end_screen_rect.center = (gs.screen_width//2,
+                                       gs.screen_height//2)
+
+        game_over_font: Font = pygame.font.Font("assets/fonts/gameboy.ttf",
+                                                40)
+        
+        self.over_text: Surface = game_over_font.render("GAME OVER", 
+                                                             True,
+                                                             gs.WHITE)
+        self.over_rect: Rect = self.over_text.get_rect()
+        self.over_rect.center = (gs.screen_width//2, 200)
+
+        
+
+        
+    
+    def display_end_screen(self) -> None:
+        self.end_screen.fill(gs.DARKBLUE)
+        self.screen.blit(self.end_screen, self.end_screen_rect)
+
+        self.screen.blit(self.over_text, self.over_rect)
         
 
     def create_pause_screen(self) -> None:
@@ -161,31 +198,33 @@ class Tetris:
         self.pause_text_rect.center = (gs.screen_width//2+10, 200)
         
         # options text
-        options_font: Font = pygame.font\
+        self.options_font: Font = pygame.font\
                             .Font("assets/fonts/gameboy.ttf", 20)
         
         ## resume
-        self.resume_image: Surface = options_font.render("RESUME", True,
-                                                         gs.WHITE)
+        self.resume_image: Surface = self.options_font.render("RESUME", True,
+                                                              gs.WHITE)
         self.resume_rect: Rect = self.resume_image.get_rect()
         self.resume_rect.center = (gs.screen_width//2, 270)
 
-        self.resume_alt_image: Surface = options_font.render("-RESUME-", True,
-                                                             gs.WHITE)
+        self.resume_alt_image: Surface = self.options_font.render("-RESUME-",
+                                                                  True,
+                                                                  gs.WHITE)
         self.resume_alt_rect: Rect = self.resume_alt_image.get_rect()
         self.resume_alt_rect.center = (gs.screen_width//2, 270)
 
         # menu
-        self.menu_image: Surface = options_font.render("MENU", True, gs.WHITE)
+        self.menu_image: Surface = self.options_font.render("MENU", True,
+                                                            gs.WHITE)
         self.menu_rect: Rect = self.menu_image.get_rect()
         self.menu_rect.center = (gs.screen_width//2, 320)
 
-        self.menu_alt_image: Surface = options_font.render("-MENU-", True,
-                                                           gs.WHITE)
+        self.menu_alt_image: Surface = self.options_font.render("-MENU-", 
+                                                                True,
+                                                                gs.WHITE)
         self.menu_alt_rect: Rect = self.menu_alt_image.get_rect()
         self.menu_alt_rect.center = (gs.screen_width//2, 320)
         
-
 
     def display_pause_screen(self) -> None:
         self.pause_screen.fill(gs.BLACK)
@@ -285,7 +324,8 @@ class Tetris:
         """
         if self.tetromino.landed:
             if self.is_game_over():
-                self.reset_game()
+                self.game_over = True
+                self.display_end_screen()
             else:
                 self.score += 10
                 self.audio_handler.landed.play()

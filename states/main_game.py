@@ -10,12 +10,14 @@ from pygame.font import Font
 
 import game_settings as gs
 from state_manager import StateManager
+from audio_handler import AudioHandler
 
 
 ### GAME STATE CLASS ###
 class Tetris:
     """Represents the tetris game state."""
-    def __init__(self, screen: Surface, state_manager: StateManager) -> None:
+    def __init__(self, screen: Surface, state_manager: StateManager,
+                 audio_handler: AudioHandler) -> None:
         """
         Initialize an instance of the tetris game scene.
 
@@ -24,6 +26,7 @@ class Tetris:
         """
         self.screen: Surface = screen
         self.state_manager: StateManager =  state_manager
+        self.audio_handler: AudioHandler = audio_handler
 
         self.bg_color: tuple[int,int,int] = gs.DARKBLUE
         self.ui_font: Font = pygame.font.Font("assets/fonts/gameboy.ttf", 20)
@@ -98,7 +101,12 @@ class Tetris:
                 elif self.menu_alt_rect.collidepoint(pos):
                     menu_class = self.state_manager.get_state("main_menu")
                     self.state_manager.set_state(menu_class(self.screen,
-                                                        self.state_manager))
+                                                        self.state_manager,
+                                                        self.audio_handler))
+                    
+
+    def reset_game(self) -> None:
+        self.__init__(self.screen, self.state_manager, self.audio_handler)
             
 
     def draw_grid(self) -> None:
@@ -154,22 +162,22 @@ class Tetris:
         self.resume_image: Surface = options_font.render("RESUME", True,
                                                          gs.WHITE)
         self.resume_rect: Rect = self.resume_image.get_rect()
-        self.resume_rect.center = (gs.screen_width//2, 260)
+        self.resume_rect.center = (gs.screen_width//2, 270)
 
         self.resume_alt_image: Surface = options_font.render("-RESUME-", True,
                                                              gs.WHITE)
         self.resume_alt_rect: Rect = self.resume_alt_image.get_rect()
-        self.resume_alt_rect.center = (gs.screen_width//2, 260)
+        self.resume_alt_rect.center = (gs.screen_width//2, 270)
 
         # menu
         self.menu_image: Surface = options_font.render("MENU", True, gs.WHITE)
         self.menu_rect: Rect = self.menu_image.get_rect()
-        self.menu_rect.center = (gs.screen_width//2, 300)
+        self.menu_rect.center = (gs.screen_width//2, 320)
 
         self.menu_alt_image: Surface = options_font.render("-MENU-", True,
                                                            gs.WHITE)
         self.menu_alt_rect: Rect = self.menu_alt_image.get_rect()
-        self.menu_alt_rect.center = (gs.screen_width//2, 300)
+        self.menu_alt_rect.center = (gs.screen_width//2, 320)
         
 
 
@@ -271,9 +279,10 @@ class Tetris:
         """
         if self.tetromino.landed:
             if self.is_game_over():
-                self.__init__(self.screen, self.state_manager)
+                self.reset_game()
             else:
                 self.score += 10
+                self.audio_handler.landed.play()
                 pygame.time.set_timer(self.user_event, gs.TIME_INTERVAL)
                 self.put_blocks_in_array()
                 self.next_tetronimo.current = True
@@ -298,6 +307,7 @@ class Tetris:
                     self.field_array[line][row].pos = Vector2(line, cell)
             
             if all(current_line):
+                self.audio_handler.full_line.play()
                 self.score += 100
                 for block in current_line:
                     block.alive = False

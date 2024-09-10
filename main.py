@@ -7,6 +7,8 @@ from pygame.time import Clock
 
 import game_settings as gs
 
+from audio_handler import AudioHandler
+
 from state_manager import StateManager
 from states.main_menu import MainMenu
 from states.main_game import Tetris
@@ -22,9 +24,12 @@ class Game:
                                                         gs.screen_height))
         self.clock: Clock = pygame.time.Clock()
 
+        self.audio_handler: AudioHandler = AudioHandler()
+
         self.state_manager: StateManager = StateManager()
         self.initialize_states()
-        self.state_manager.current_state = MainMenu(self.screen, self.state_manager)
+        self.state_manager.current_state = MainMenu(self.screen, self.state_manager,
+                                                    self.audio_handler)
 
 
     def run(self) -> None:

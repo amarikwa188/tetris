@@ -5,13 +5,15 @@ from pygame.event import Event
 
 import game_settings as gs
 from state_manager import StateManager
+from audio_handler import AudioHandler
 
 from button import Button
 
 
 class MainMenu:
     """Represents the main menu state."""
-    def __init__(self, screen: Surface, state_manager: StateManager) -> None:
+    def __init__(self, screen: Surface, state_manager: StateManager,
+                 audio_handler: AudioHandler) -> None:
         """
         Initialize an instance of the main menu.
 
@@ -20,6 +22,7 @@ class MainMenu:
         """
         self.screen: Surface = screen
         self.state_manager: StateManager = state_manager
+        self.audio_handler: AudioHandler = audio_handler
 
         # main menu bg
         self.background: Surface = pygame.image\
@@ -28,11 +31,13 @@ class MainMenu:
         # main menu buttons
         self.start_button: Button = Button(screen, gs.screen_width//2, 300,
                                            "assets/ui/play.png",
-                                           "assets/ui/play_H.png", 0.8)
+                                           "assets/ui/play_H.png", 0.8,
+                                           self.audio_handler.click_sfx)
 
         self.quit_button: Button = Button(screen, gs.screen_width//2, 340,
                                           "assets/ui/exit.png",
-                                          "assets/ui/exit_H.png", 0.7)
+                                          "assets/ui/exit_H.png", 0.7,
+                                          self.audio_handler.click_sfx)
 
     
     def run(self) -> None:
@@ -56,7 +61,8 @@ class MainMenu:
         if self.start_button.clicked():
             self.game_class = self.state_manager.get_state("main_game")
             self.state_manager.set_state(self.game_class(self.screen,
-                                                            self.state_manager))
+                                                         self.state_manager,
+                                                         self.audio_handler))
 
         if self.quit_button.clicked():
             sys.exit()

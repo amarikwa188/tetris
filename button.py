@@ -1,11 +1,13 @@
 import pygame
 from pygame import Surface, Rect
+from pygame.mixer import Sound
 
 
 class Button:
     """Represents an instance of the button class."""
     def __init__(self, surface: Surface, x: int, y: int, image: str, 
-                 hover_image: str='', scale: float=1.0) -> None:
+                 hover_image: str='', scale: float=1.0,
+                 click_sfx: Sound=None) -> None:
         """
         Initialize a button object.
 
@@ -18,6 +20,8 @@ class Button:
         :param scale: the scale of the button.
         """
         self.surface: Surface = surface
+
+        self.sfx: Sound = click_sfx
 
         self.main_image: Surface = pygame.image.load(image)
         
@@ -103,6 +107,8 @@ class Button:
 
         if mouse_pressed and self.rect.collidepoint(pos) and \
              not self.button_clicked:
+            if self.sfx:
+                self.sfx.play()
             self.button_clicked = True
 
         if not self.rect.collidepoint(pos):
